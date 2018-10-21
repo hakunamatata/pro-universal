@@ -293,4 +293,14 @@ export default {
   'app.setting.copyinfo': 'copy success，please replace defaultSettings in src/models/setting.js',
   'app.setting.production.hint':
     'Setting panel shows in development environment only, please manually modify',
+    
+    
+    /*
+        Universal Add    
+    */
+   'validation.account.wrong-format':'请输入4-16位以字母,数字,下划线,减号组成的账号',
+   'validation.account.required':'请输入账号',
+   'validation.account.placeholder':'账号',
+   'menu.system':'System',
+   'menu.system.user':'Users'
 };
