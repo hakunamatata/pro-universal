@@ -1,7 +1,13 @@
 import request from '@/utils/request';
 
-export async function query() {
-  return request('/api/users');
+export async function query(params) {
+  return request('/api/user/list', {
+      method:'POST',
+      body:{
+          ...params,
+          method:'post'
+      }
+  });
 }
 
 export async function queryCurrent() {

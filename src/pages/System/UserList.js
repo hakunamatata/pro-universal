@@ -17,6 +17,7 @@ import {
     Modal,
     message,
     Badge,
+    Avatar,
     Divider,
     Steps,
     Radio,
@@ -25,6 +26,7 @@ import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
 import styles from './UserList.less';
+const { RangePicker } = DatePicker;
 const { Description } = DescriptionList;
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -43,7 +45,6 @@ const CreateForm = Form.create()(props => {
     const okHandle = () => {
         form.validateFields((err, fieldsValue) => {
             if (err) return;
-            form.resetFields();
             handleAdd(fieldsValue);
         });
     };
@@ -59,9 +60,13 @@ const CreateForm = Form.create()(props => {
                 {form.getFieldDecorator('account', {
                     rules: [{ required: true, message: '请输入至少六个字符的账号！', min: 6 }],
                 })(<Input placeholder="请输入用户账号、手机号或者邮箱" />)}
-                   <Description>
+
+            </FormItem>
+            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="描述">
+                {form.getFieldDecorator('desc')(<TextArea rows="3" />)}
+                <Description>
                     初始密码为 000000
-            </Description>
+                </Description>
             </FormItem>
         </Modal>
     );
@@ -269,9 +274,9 @@ class UpdateForm extends PureComponent {
 }
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ rule, loading }) => ({
-    rule,
-    loading: loading.models.rule,
+@connect(({ user, loading }) => ({
+    user,
+    loading: loading.models.user['fetch'],
 }))
 @Form.create()
 class SystemUserList extends PureComponent {
@@ -286,52 +291,44 @@ class SystemUserList extends PureComponent {
 
     columns = [
         {
-            title: '规则名称',
+            title: '',
+            dataIndex: 'avatar',
+            render: val => {
+                return (val == null || val == ''
+                    ? <Avatar src={require('@/assets/avt_default.jpg')} shape="square" size="small" />
+                    : <Avatar src={val} shape="square" size="small" />
+                )
+            }
+        },
+        {
+            title: '账号',
+            dataIndex: 'account',
+        },
+        {
+            title: '名称',
             dataIndex: 'name',
+        },
+        {
+            title: '邮箱',
+            dataIndex: 'email',
+        },
+        {
+            title: '手机号码',
+            dataIndex: 'phone',
         },
         {
             title: '描述',
             dataIndex: 'desc',
         },
         {
-            title: '服务调用次数',
-            dataIndex: 'callNo',
+            title: '创建时间',
+            dataIndex: 'createDate',
             sorter: true,
-            align: 'right',
-            render: val => `${val} 万`,
-            // mark to display a total number
-            needTotal: true,
+            render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
         },
         {
             title: '状态',
-            dataIndex: 'status',
-            filters: [
-                {
-                    text: status[0],
-                    value: 0,
-                },
-                {
-                    text: status[1],
-                    value: 1,
-                },
-                {
-                    text: status[2],
-                    value: 2,
-                },
-                {
-                    text: status[3],
-                    value: 3,
-                },
-            ],
-            render(val) {
-                return <Badge status={statusMap[val]} text={status[val]} />;
-            },
-        },
-        {
-            title: '上次调度时间',
-            dataIndex: 'updatedAt',
-            sorter: true,
-            render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+            dataIndex: 'status'
         },
         {
             title: '操作',
@@ -348,7 +345,7 @@ class SystemUserList extends PureComponent {
     componentDidMount() {
         const { dispatch } = this.props;
         dispatch({
-            type: 'rule/fetch',
+            type: 'user/fetch',
         });
     }
 
@@ -373,7 +370,7 @@ class SystemUserList extends PureComponent {
         }
 
         dispatch({
-            type: 'rule/fetch',
+            type: 'user/fetch',
             payload: params,
         });
     };
@@ -385,7 +382,7 @@ class SystemUserList extends PureComponent {
             formValues: {},
         });
         dispatch({
-            type: 'rule/fetch',
+            type: 'user/fetch',
             payload: {},
         });
     };
@@ -436,8 +433,8 @@ class SystemUserList extends PureComponent {
             if (err) return;
 
             const values = {
-                ...fieldsValue,
-                updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+                ...fieldsValue
+              //  updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
             };
 
             this.setState({
@@ -445,7 +442,7 @@ class SystemUserList extends PureComponent {
             });
 
             dispatch({
-                type: 'rule/fetch',
+                type: 'user/fetch',
                 payload: values,
             });
         });
@@ -471,10 +468,16 @@ class SystemUserList extends PureComponent {
             payload: {
                 account: fields.account,
             },
+            callback: res => {
+                console.log(res);
+                if (res.err_code == null) {
+                    message.success('添加成功');
+                    this.handleModalVisible();
+                }
+                else
+                    message.error(res.err_msg);
+            }
         });
-
-        message.success('添加成功');
-        this.handleModalVisible();
     };
 
     handleUpdate = fields => {
@@ -500,32 +503,47 @@ class SystemUserList extends PureComponent {
             <Form onSubmit={this.handleSearch} layout="inline">
                 <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                     <Col md={8} sm={24}>
-                        <FormItem label="规则名称">
-                            {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+                        <FormItem label="用户账号">
+                            {getFieldDecorator('account')(<Input placeholder="请输入账号、手机号或者邮箱" />)}
                         </FormItem>
                     </Col>
                     <Col md={8} sm={24}>
-                        <FormItem label="使用状态">
-                            {getFieldDecorator('status')(
-                                <Select placeholder="请选择" style={{ width: '100%' }}>
-                                    <Option value="0">关闭</Option>
-                                    <Option value="1">运行中</Option>
-                                </Select>
+                        <FormItem label="创建日期">
+                            {getFieldDecorator('createDate')(
+                                <DatePicker
+                                    style={{ width: '100%' }}
+                                    format="YYYY-MM-DD"
+                                    placeholder="请选择用户创建日期"
+                                />
                             )}
                         </FormItem>
                     </Col>
+
                     <Col md={8} sm={24}>
                         <span className={styles.submitButtons}>
                             <Button type="primary" htmlType="submit">
                                 查询
-              </Button>
+                            </Button>
                             <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
                                 重置
-              </Button>
-                            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                            </Button>
+                            {/* <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                                 展开 <Icon type="down" />
-                            </a>
+                            </a> */}
                         </span>
+                    </Col>
+                </Row>
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                    <Col md={8} sm={24}>
+                        <FormItem label="用户状态">
+                            {getFieldDecorator('status', { initialValue: '1' })(
+                                <Select placeholder="请选择" style={{ width: '100%' }}>
+                                    <Option value="1">正常</Option>
+                                    <Option value="2">锁定</Option>
+                                    <Option value="0">禁用</Option>
+                                </Select>
+                            )}
+                        </FormItem>
                     </Col>
                 </Row>
             </Form>
@@ -613,7 +631,7 @@ class SystemUserList extends PureComponent {
 
     render() {
         const {
-            rule: { data },
+            user: { data },
             loading,
         } = this.props;
         const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
@@ -656,6 +674,7 @@ class SystemUserList extends PureComponent {
                             selectedRows={selectedRows}
                             loading={loading}
                             data={data}
+                            rowKey={'userid'}
                             columns={this.columns}
                             onSelectRow={this.handleSelectRows}
                             onChange={this.handleStandardTableChange}

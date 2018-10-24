@@ -1,71 +1,75 @@
-import { 
-    query as queryUsers, 
+import {
+    query as queryUsers,
     queryCurrent,
     createUser
 } from '@/services/user';
 
 export default {
-  namespace: 'user',
+    namespace: 'user',
 
-  state: {
-    list: [],
-    currentUser: {},
-  },
-
-  effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(queryUsers);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-    },
-    // 创建用户
-    *create({ payload, callback }, { call, put }) {
-        const response = yield call(createUser, payload);
-        yield put({
-          type: 'createdResult',
-          payload: response,
-        });
-        if (callback) callback();
-      },
-    *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
-      yield put({
-        type: 'saveCurrentUser',
-        payload: response,
-      });
-    },
-  },
-
-  reducers: {
-    save(state, action) {
-      return {
-        ...state,
-        list: action.payload,
-      };
-    },
-    saveCurrentUser(state, action) {
-      return {
-        ...state,
-        currentUser: action.payload || {},
-      };
-    },
-    changeNotifyCount(state, action) {
-      return {
-        ...state,
-        currentUser: {
-          ...state.currentUser,
-          notifyCount: action.payload,
+    state: {
+        data: {
+            list: [],
+            pagination: {}
         },
-      };
+        currentUser: {},
     },
-    // 用户创建结果
-    createdResult(state, action){
-        return {
-            ...state,
-            result: action.payload
-        }
-    }
-  },
+
+    effects: {
+        *fetch({ payload }, { call, put }) {
+            const response = yield call(queryUsers, payload);
+            yield put({
+                type: 'save',
+                payload: response,
+            });
+        },
+        // 创建用户
+        *create({ payload, callback }, { call, put }) {
+            const response = yield call(createUser, payload);
+            if (response.err_code == null)
+                yield put({
+                    type: 'add',
+                    payload: response,
+                });
+            if (callback) callback(response);
+        },
+        *fetchCurrent(_, { call, put }) {
+            const response = yield call(queryCurrent);
+            yield put({
+                type: 'saveCurrentUser',
+                payload: response,
+            });
+        },
+    },
+
+    reducers: {
+        save(state, action) {
+            return {
+                ...state,
+                data: action.payload,
+            };
+        },
+        add(state, action) {
+            let { list, pagination } = state.data;
+            return {
+                ...state,
+                data: { list: [action.payload.data, ...list], pagination }
+            };
+        },
+        saveCurrentUser(state, action) {
+            return {
+                ...state,
+                currentUser: action.payload || {},
+            };
+        },
+        changeNotifyCount(state, action) {
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    notifyCount: action.payload,
+                },
+            };
+        },
+    },
 };
