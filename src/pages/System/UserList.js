@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import moment from 'moment';
 import {
   Row,
@@ -333,9 +334,9 @@ class SystemUserList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>
+          <Link to={`/system/user/detail?id=${record.userid}`}>修改</Link>
           <Divider type="vertical" />
-          <a href="">订阅警报</a>
+          <a href="">删除</a>
         </Fragment>
       ),
     },

@@ -13,13 +13,13 @@ import {
   Popover,
 } from 'antd';
 import { connect } from 'dva';
+import router from 'umi/router';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 // import TableForm from './TableForm';
 import styles from './UserDetail.less';
 
 const { Option } = Select;
-const { RangePicker } = DatePicker;
 
 const fieldLabels = {
   name: '仓库名',
@@ -67,6 +67,21 @@ class UserDetailForm extends PureComponent {
   };
 
   componentDidMount() {
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    if (!query.id || !(typeof query.id === 'string')) {
+      router.push('/system/user');
+    }
+    dispatch({
+      type: 'user/get',
+      payload: query,
+      callback(res) {
+        console.log(res);
+      },
+    });
+
     window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
   }
 
@@ -214,7 +229,7 @@ class UserDetailForm extends PureComponent {
                   {getFieldDecorator('dateRange', {
                     rules: [{ required: true, message: '请选择生效日期' }],
                   })(
-                    <RangePicker placeholder={['开始日期', '结束日期']} style={{ width: '100%' }} />
+                    <DatePicker placeholder={['开始日期', '结束日期']} style={{ width: '100%' }} />
                   )}
                 </Form.Item>
               </Col>

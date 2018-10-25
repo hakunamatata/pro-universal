@@ -268,7 +268,6 @@ export default [
           },
           {
             path: '/system/user/detail',
-            name: 'user-detail',
             component: './System/UserDetail',
           },
         ],
