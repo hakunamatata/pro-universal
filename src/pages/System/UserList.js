@@ -628,7 +628,7 @@ class SystemUserList extends PureComponent {
 
   render() {
     const {
-      user: { data },
+      user: { sysList },
       loading,
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
@@ -670,7 +670,7 @@ class SystemUserList extends PureComponent {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={data}
+              data={sysList}
               rowKey={'userid'}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
