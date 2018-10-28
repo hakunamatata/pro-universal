@@ -39,7 +39,7 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 const status = ['正常', '禁止登录', '锁定', '禁用'];
-const statusColor = [ 'green', 'orange' , 'orange','red'];
+const statusColor = ['green', 'orange', 'orange', 'red'];
 
 const CreateForm = Form.create()(props => {
   const { modalVisible, form, handleAdd, handleModalVisible } = props;
@@ -295,8 +295,8 @@ class SystemUserList extends PureComponent {
         return val == null || val == '' ? (
           <Avatar src={require('@/assets/avt_default.jpg')} shape="square" size="small" />
         ) : (
-          <Avatar src={val} shape="square" size="small" />
-        );
+            <Avatar src={val} shape="square" size="small" />
+          );
       },
     },
     {
@@ -355,15 +355,19 @@ class SystemUserList extends PureComponent {
       return newObj;
     }, {});
 
+    if (sorter.field) {
+      if (sorter.field == 'createDate')
+        pagination.sorter = `CreateDate ${sorter.order == 'descend' ? 'desc' : ''}`
+    }
+
     const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
+      pagi: pagination
     };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
+
+
+    console.log(params);
 
     dispatch({
       type: 'user/fetch',
@@ -462,9 +466,9 @@ class SystemUserList extends PureComponent {
     dispatch({
       type: 'user/create',
       payload: {
-            account: fields.account,
-            desc:fields.desc
-        },
+        account: fields.account,
+        desc: fields.desc
+      },
       callback: res => {
         if (res.err_code == null) {
           message.success('添加成功');
