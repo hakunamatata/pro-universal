@@ -43,3 +43,13 @@ export async function editUser(params) {
         }
     })
 }
+
+export async function removeUser(params) {
+    return request('/api/user/remove', {
+        method: 'POST',
+        body: {
+            ...params,
+            method: 'post'
+        }
+    })
+}

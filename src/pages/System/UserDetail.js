@@ -8,9 +8,11 @@ import {
     Col,
     Row,
     DatePicker,
+    Popconfirm,
     Input,
     Select,
     Popover,
+    message
 } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -40,6 +42,7 @@ const fieldLabels = {
 @connect(({ user, loading }) => ({
     user,
     submitting: loading.effects['user/edit'],
+    removing: loading.effects['user/remove']
 }))
 @Form.create()
 class UserDetailForm extends PureComponent {
@@ -138,18 +141,51 @@ class UserDetailForm extends PureComponent {
                 dispatch({
                     type: 'user/edit',
                     payload: values,
+                    callback: (res) => {
+                        if (res.err_code)
+                            message.error(res.err_msg);
+                        else
+                            message.success(
+                                <span>更新成功，<a onClick={() => { router.push('/system/user'); }}>返回列表</a></span>
+                                , 2)
+                    }
+
                 });
             }
         });
     };
 
+    removeUser = () => {
+        const {
+            dispatch,
+            location: { query }
+        } = this.props;
+        if (!query.id || !(typeof query.id === 'string')) {
+            message.error("操作失败，请重新加载页面", 3, () => {
+                router.push('/system/user');
+            });
+        }
+        dispatch({
+            type: 'user/remove',
+            payload: query,
+            callback: (res) => {
+                if (!res.err_code)
+                    router.push('/system/user');
+                else
+                    message.error(res.err_msg);
+            }
+        })
+    }
+
     render() {
         const {
             form: { getFieldDecorator },
             submitting,
+            removing,
             user: { detail }
         } = this.props;
         const { width } = this.state;
+
         return (
             <PageHeaderWrapper
                 title={`编辑用户 "${detail.Account}"`}
@@ -227,7 +263,7 @@ class UserDetailForm extends PureComponent {
                             <Col xl={{ span: 8, offset: 2 }} lg={{ span: 10 }} md={{ span: 24 }} sm={24}>
                                 <Form.Item label="生日">
                                     {getFieldDecorator('birthday', {
-                                        initialValue: moment(detail.Birthday),
+                                        initialValue: detail.Birthday ? moment(detail.Birthday) : null,
                                     })(
                                         <DatePicker style={{ width: '100%' }} placeholder="请选择出生日期" />
                                     )}
@@ -268,7 +304,9 @@ class UserDetailForm extends PureComponent {
                             <Col lg={12} md={24} sm={24}>
                                 <Form.Item label="允许登录时间范围">
                                     {getFieldDecorator('allow', {
-                                        initialValue: [moment(detail.AllowStartDate), moment(detail.AllowEndDate)]
+                                        initialValue: [
+                                            detail.AllowStartDate ? moment(detail.AllowStartDate) : null,
+                                            detail.AllowEndDate ? moment(detail.AllowEndDate) : null]
                                     })(
                                         <RangePicker style={{ width: '100%' }} />
                                     )}
@@ -277,7 +315,9 @@ class UserDetailForm extends PureComponent {
                             <Col lg={12} md={24} sm={24}>
                                 <Form.Item label="账号锁定时间范围">
                                     {getFieldDecorator('lock', {
-                                        initialValue: [moment(detail.LockStartDate), moment(detail.LockEndDate)]
+                                        initialValue: [
+                                            detail.LockStartDate ? moment(detail.LockStartDate) : null,
+                                            detail.LockEndDate ? moment(detail.LockEndDate) : null]
                                     })(
                                         <RangePicker style={{ width: '100%' }} />
                                     )}
@@ -304,12 +344,12 @@ class UserDetailForm extends PureComponent {
                             <Col lg={24} md={24} sm={24}>
                                 <Form.Item label="是否启用">
                                     {getFieldDecorator('enabled', {
-                                        valuePropName:'checked',
-                                        initialValue:detail.EnableMark
+                                        valuePropName: 'checked',
+                                        initialValue: detail.EnableMark
                                     })(
                                         <Switch checkedChildren={<Icon type="check" />}
                                             unCheckedChildren={<Icon type="close" />}
-                                             />
+                                        />
                                     )}
                                 </Form.Item>
                             </Col>
@@ -325,9 +365,12 @@ class UserDetailForm extends PureComponent {
         </Card> */}
                 <FooterToolbar style={{ width }}>
                     {this.getErrorInfo()}
-                    <Button type="danger" loading={submitting}>
-                        删除账号
-                    </Button>
+                    <Popconfirm title="确定要删除这个用户吗？" onConfirm={this.removeUser} okText="确定" cancelText="取消">
+                        <Button type="danger" loading={removing}>
+                            删除账号
+                        </Button>
+                    </Popconfirm>
+
                     <Button type="primary" onClick={this.validate} loading={submitting}>
                         提交
                     </Button>

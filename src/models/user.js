@@ -3,7 +3,8 @@ import {
     queryUser,
     queryCurrent,
     createUser,
-    editUser
+    editUser,
+    removeUser
 } from '@/services/user';
 
 export default {
@@ -38,12 +39,14 @@ export default {
         },
 
         *edit({ payload, callback }, { call, put }) {
-            console.log(payload);
             const response = yield call(editUser, payload);
-            console.log(response);
-            if (callback) yield call(callback);
+            if (callback) yield call(callback, response);
         },
+        *remove({ payload, callback }, { call, put }) {
+            const response = yield call(removeUser, payload);
+            if (callback) yield call(callback, response);
 
+        },
         *fetchCurrent(_, { call, put }) {
             const response = yield call(queryCurrent);
             yield put({
@@ -75,10 +78,10 @@ export default {
             }
         },
         add(state, action) {
-            let { list, pagination } = state.data;
+            let { list, pagination } = state.sysList;
             return {
                 ...state,
-                sysList: { list: [action.payload.data, ...list], pagination },
+                sysList: { list: [action.payload, ...list], pagination },
             };
         },
         saveCurrentUser(state, action) {

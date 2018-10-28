@@ -274,7 +274,7 @@ class UpdateForm extends PureComponent {
 /* eslint react/no-multi-comp:0 */
 @connect(({ user, loading }) => ({
   user,
-  loading: loading.models.user['fetch'],
+  loading: loading.models.user,
 }))
 @Form.create()
 class SystemUserList extends PureComponent {
@@ -316,14 +316,10 @@ class SystemUserList extends PureComponent {
       dataIndex: 'phone',
     },
     {
-      title: '描述',
-      dataIndex: 'desc',
-    },
-    {
       title: '创建时间',
       dataIndex: 'createDate',
       sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
     },
     {
       title: '状态',
@@ -334,7 +330,7 @@ class SystemUserList extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <Link to={`/system/user/detail?id=${record.userid}`}>修改</Link>
+          <Link to={`/system/user/detail?id=${record.userid}`}>编辑</Link>
           <Divider type="vertical" />
           <a href="">删除</a>
         </Fragment>
