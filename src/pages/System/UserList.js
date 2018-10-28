@@ -295,8 +295,8 @@ class SystemUserList extends PureComponent {
         return val == null || val == '' ? (
           <Avatar src={require('@/assets/avt_default.jpg')} shape="square" size="small" />
         ) : (
-            <Avatar src={val} shape="square" size="small" />
-          );
+          <Avatar src={val} shape="square" size="small" />
+        );
       },
     },
     {
@@ -357,15 +357,14 @@ class SystemUserList extends PureComponent {
 
     if (sorter.field) {
       if (sorter.field == 'createDate')
-        pagination.sorter = `CreateDate ${sorter.order == 'descend' ? 'desc' : ''}`
+        pagination.sorter = `CreateDate ${sorter.order == 'descend' ? 'desc' : ''}`;
     }
 
     const params = {
       ...formValues,
       ...filters,
-      pagi: pagination
+      pagi: pagination,
     };
-
 
     console.log(params);
 
@@ -467,7 +466,7 @@ class SystemUserList extends PureComponent {
       type: 'user/create',
       payload: {
         account: fields.account,
-        desc: fields.desc
+        desc: fields.desc,
       },
       callback: res => {
         if (res.err_code == null) {
