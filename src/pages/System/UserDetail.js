@@ -41,6 +41,7 @@ const fieldLabels = {
 
 @connect(({ user, loading }) => ({
   user,
+  loading:loading.effects['user/fetchUser'],
   submitting: loading.effects['user/edit'],
   removing: loading.effects['user/remove'],
 }))
@@ -185,6 +186,7 @@ class UserDetailForm extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      loading,
       submitting,
       removing,
       user: { detail },
@@ -193,11 +195,12 @@ class UserDetailForm extends PureComponent {
 
     return (
       <PageHeaderWrapper
+        loading={loading}
         title={`编辑用户 "${detail.Account}"`}
         content={`备注: ${detail.Description || '无'}`}
         wrapperClassName={styles.advancedForm}
       >
-        <Card title="基本信息" className={styles.card} bordered={false}>
+        <Card title="基本信息" className={styles.card} bordered={false} loading={loading}>
           <Form layout="vertical" hideRequiredMark>
             <Row gutter={16}>
               <Col lg={6} md={12} sm={24}>
@@ -286,15 +289,15 @@ class UserDetailForm extends PureComponent {
             </Row>
           </Form>
         </Card>
-        <Card title="账号安全" className={styles.card} bordered={false}>
+        <Card title="账号安全" className={styles.card} bordered={false} loading={loading}>
           <Form layout="vertical" hideRequiredMark>
             <Row gutter={16}>
               <Col lg={12} md={24} sm={24}>
                 <Form.Item label="允许登录时间范围">
                   {getFieldDecorator('allow', {
                     initialValue: [
-                      detail.AllowStartDate ? moment(detail.AllowStartDate) : null,
-                      detail.AllowEndDate ? moment(detail.AllowEndDate) : null,
+                      detail.AllowStartTime ? moment(detail.AllowStartTime) : null,
+                      detail.AllowEndTime ? moment(detail.AllowEndTime) : null,
                     ],
                   })(<RangePicker style={{ width: '100%' }} />)}
                 </Form.Item>
@@ -343,7 +346,7 @@ class UserDetailForm extends PureComponent {
             </Row>
           </Form>
         </Card>
-        <Card title="权限分配" className={styles.card} bordered={false} />
+        <Card title="权限分配" className={styles.card} bordered={false} loading={loading} />
         {/* <Card title="成员管理" bordered={false}>
           {getFieldDecorator('members', {
             initialValue: tableData,

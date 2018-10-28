@@ -38,8 +38,8 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-const status = ['禁用', '正常', '锁定'];
-const statusColor = ['red', 'green', 'orange'];
+const status = ['正常', '禁止登录', '锁定', '禁用'];
+const statusColor = [ 'green', 'orange' , 'orange','red'];
 
 const CreateForm = Form.create()(props => {
   const { modalVisible, form, handleAdd, handleModalVisible } = props;
@@ -324,7 +324,7 @@ class SystemUserList extends PureComponent {
     {
       title: '状态',
       dataIndex: 'status',
-      render: val => <Tag color={statusColor[val]}>{status[val]}</Tag>,
+      render: val => <Tag color={statusColor[val - 1]}>{status[val - 1]}</Tag>,
     },
     {
       title: '操作',
@@ -462,8 +462,9 @@ class SystemUserList extends PureComponent {
     dispatch({
       type: 'user/create',
       payload: {
-        account: fields.account,
-      },
+            account: fields.account,
+            desc:fields.desc
+        },
       callback: res => {
         if (res.err_code == null) {
           message.success('添加成功');
@@ -529,11 +530,12 @@ class SystemUserList extends PureComponent {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="用户状态">
-              {getFieldDecorator('status', { initialValue: '1' })(
+              {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="1">正常</Option>
-                  <Option value="2">锁定</Option>
-                  <Option value="0">禁用</Option>
+                  <Option value="2">禁止登录</Option>
+                  <Option value="3">锁定</Option>
+                  <Option value="4">禁用</Option>
                 </Select>
               )}
             </FormItem>

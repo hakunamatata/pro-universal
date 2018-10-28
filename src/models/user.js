@@ -33,7 +33,7 @@ export default {
       if (response.err_code == null)
         yield put({
           type: 'add',
-          payload: response,
+          payload: response.data,
         });
       if (callback) yield callback(response);
     },
@@ -58,7 +58,7 @@ export default {
       const response = yield call(queryUser, payload);
       yield put({
         type: 'saveDetail',
-        payload: response,
+        payload: response.data,
       });
     },
   },
