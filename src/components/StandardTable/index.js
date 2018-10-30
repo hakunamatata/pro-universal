@@ -75,7 +75,6 @@ class StandardTable extends PureComponent {
       showQuickJumper: true,
       ...pagination,
     };
-
     const rowSelection = {
       selectedRowKeys,
       onChange: this.handleRowSelectChange,

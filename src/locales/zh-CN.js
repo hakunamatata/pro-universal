@@ -294,5 +294,14 @@ export default {
    'validation.account.required':'请输入账号',
    'validation.account.placeholder':'账号',
    'menu.system':'系统管理',
-   'menu.system.user':'用户管理'
+   'menu.system.user':'用户管理',
+   
+   
+   /*
+        系统错误信息
+   */
+   'error.ERR_ARGUMENT_FORMAT':'用户账号格式不正确',
+   'error.ERR_INTERNAL':'内部未知错误',
+   'error.ERR_USER_EXIST':'该用户已存在',
+   'error.ERR_UNKNOW':'未知错误'
 };

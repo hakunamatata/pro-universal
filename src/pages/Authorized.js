@@ -11,3 +11,13 @@ export default ({ children }) => (
     {children}
   </Authorized>
 );
+
+// export default ({ children }) => {
+//     console.log(children);
+//     return (
+//         <Authorized authority={children.props.route.authority} noMatch={<Redirect to="/user/login" />}>
+//           {children}
+//         </Authorized>
+//       )
+// }
+  
