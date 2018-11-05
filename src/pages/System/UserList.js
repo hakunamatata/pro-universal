@@ -331,7 +331,7 @@ class SystemUserList extends PureComponent {
             title: '操作',
             render: (text, record) => (
                 <Fragment>
-                    <Link to={`/system/user/detail?id=${record.userid}`}>编辑</Link>
+                    <Link to={`/system/user/detail?id=${record.account}`}>编辑</Link>
                     <Divider type="vertical" />
                     <a href="">删除</a>
                 </Fragment>

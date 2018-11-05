@@ -63,7 +63,7 @@ class UserDetailForm extends PureComponent {
             location: { query },
         } = this.props;
 
-        if (!query.id || !(typeof query.id === 'string')) {
+        if (!query.id || !(typeof query.id === 'string') || query.id === undefined) {
             router.push('/system/user');
         }
 
@@ -75,9 +75,9 @@ class UserDetailForm extends PureComponent {
             },
         });
 
-        dispatch({
-            type: 'role/query'
-        });
+        // dispatch({
+        //     type: 'role/query'
+        // });
 
         window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
     }
@@ -222,8 +222,8 @@ class UserDetailForm extends PureComponent {
         return (
             <PageHeaderWrapper
                 loading={loading}
-                title={`编辑用户 "${detail.Account}"`}
-                content={`备注: ${detail.Description || '无'}`}
+                title={`编辑用户 "${detail.account}"`}
+                content={`备注: ${detail.description || '无'}`}
                 wrapperClassName={styles.advancedForm}
             >
                 <Card title="基本信息" className={styles.card} bordered={false} loading={loading}>
@@ -232,14 +232,14 @@ class UserDetailForm extends PureComponent {
                             <Col lg={6} md={12} sm={24}>
                                 <Form.Item label="账号">
                                     {getFieldDecorator('account', {
-                                        initialValue: detail.Account,
-                                    })(<b>{detail.Account}</b>)}
+                                        initialValue: detail.account,
+                                    })(<b>{detail.account}</b>)}
                                 </Form.Item>
                             </Col>
                             <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
                                 <Form.Item label="手机号码">
                                     {getFieldDecorator('mobile', {
-                                        initialValue: detail.Mobile,
+                                        initialValue: detail.mobile,
                                     })(
                                         <Input
                                             type="mobile"
@@ -253,7 +253,7 @@ class UserDetailForm extends PureComponent {
                             <Col xl={{ span: 8, offset: 2 }} lg={{ span: 10 }} md={{ span: 24 }} sm={24}>
                                 <Form.Item label="邮箱">
                                     {getFieldDecorator('email', {
-                                        initialValue: detail.Email,
+                                        initialValue: detail.email,
                                     })(
                                         <Input
                                             type="email"
@@ -269,7 +269,7 @@ class UserDetailForm extends PureComponent {
                             <Col lg={6} md={12} sm={24}>
                                 <Form.Item label="名称">
                                     {getFieldDecorator('name', {
-                                        initialValue: detail.Name,
+                                        initialValue: detail.name,
                                     })(
                                         <Input maxLength="20" style={{ width: '100%' }} placeholder="请输入用户名称" />
                                     )}
@@ -278,7 +278,7 @@ class UserDetailForm extends PureComponent {
                             <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
                                 <Form.Item label="真实姓名">
                                     {getFieldDecorator('realName', {
-                                        initialValue: detail.Name,
+                                        initialValue: detail.realName,
                                     })(
                                         <Input maxLength="50" style={{ width: '100%' }} placeholder="请输入真实姓名" />
                                     )}
@@ -287,7 +287,7 @@ class UserDetailForm extends PureComponent {
                             <Col xl={{ span: 8, offset: 2 }} lg={{ span: 10 }} md={{ span: 24 }} sm={24}>
                                 <Form.Item label="生日">
                                     {getFieldDecorator('birthday', {
-                                        initialValue: detail.Birthday ? moment(detail.Birthday) : null,
+                                        initialValue: detail.birthday ? moment(detail.birthday) : null,
                                     })(<DatePicker style={{ width: '100%' }} placeholder="请选择出生日期" />)}
                                 </Form.Item>
                             </Col>
@@ -296,7 +296,7 @@ class UserDetailForm extends PureComponent {
                             <Col lg={6} md={12} sm={24}>
                                 <Form.Item label="性别">
                                     {getFieldDecorator('gender', {
-                                        initialValue: detail.Gender,
+                                        initialValue: detail.gender,
                                     })(
                                         <Select placeholder="请选择性别">
                                             <Option value={0}>男</Option>
