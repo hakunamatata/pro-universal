@@ -12,7 +12,11 @@ export default {
 
     state: {
         currentUser: {},
-        detail: {},
+        detail: {
+            roles: [],
+            allow:[],
+            lock:[]
+        },
         sysList: {
             list: [],
             pagination: {},
@@ -22,6 +26,7 @@ export default {
     effects: {
         *fetch({ payload }, { call, put }) {
             const response = yield call(queryUsers, payload);
+            console.log('pay',payload);
             yield put({
                 type: 'save',
                 payload: response,
@@ -60,7 +65,9 @@ export default {
                 type: 'saveDetail',
                 payload: response.data,
             });
+            if (callback) yield call(callback, response);
         },
+
     },
 
     reducers: {
@@ -98,5 +105,50 @@ export default {
                 },
             };
         },
+
+        updateRoles(state, action) {
+            let { detail, ...rest } = state;
+            let { roles, ...restd } = detail;
+            return {
+                ...rest,
+                detail: {
+                    roles: action.payload,
+                    ...restd
+                }
+            }
+        },
+
+        removeRole(state, action) {
+            let { detail, ...rest } = state;
+            let { roles, ...restd } = detail;
+            console.log('a',state);
+            let code = action.payload;
+            if (roles.includes(code)) {
+                roles.splice(roles.findIndex(r => r == code), 1);
+            }
+            return {
+                ...rest,
+                detail: {
+                    roles: roles,
+                    ...restd
+                }
+            }
+        },
+
+        addRole(state, action) {
+            let { detail, ...rest } = state;
+            let { roles, ...restd } = detail;
+            let code = action.payload;
+            if (!roles.includes(code)) {
+                roles.push(code);
+            }
+            return {
+                ...rest,
+                detail: {
+                    roles: roles,
+                    ...restd
+                }
+            }
+        }
     },
 };

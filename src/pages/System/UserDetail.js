@@ -61,7 +61,9 @@ class UserDetailForm extends PureComponent {
             dispatch,
             role: { list },
             location: { query },
+            user: { detail }
         } = this.props;
+        const { roles } = this.state;
 
         if (!query.id || !(typeof query.id === 'string') || query.id === undefined) {
             router.push('/system/user');
@@ -74,11 +76,18 @@ class UserDetailForm extends PureComponent {
                 if (res == null) router.push('/system/user');
             },
         });
+        dispatch({
+            type: 'role/query',
+        });
 
-        // dispatch({
-        //     type: 'role/query'
-        // });
-
+        if (Array.isArray(detail.roles)) {
+            let ur = detail.roles.map(r => r.code);
+            list.forEach(r => {
+                if (!ur.includes(r.code))
+                    roles.push(r);
+            });
+        }
+        
         window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
     }
 
@@ -90,8 +99,9 @@ class UserDetailForm extends PureComponent {
         this.setState({
             roles: roles
         });
+     
     }
-
+    
     getErrorInfo = () => {
         const {
             form: { getFieldsError },
@@ -152,13 +162,18 @@ class UserDetailForm extends PureComponent {
         const {
             form: { validateFieldsAndScroll },
             dispatch,
+            user: { detail }
         } = this.props;
+        const roles = detail.roles || [];
         validateFieldsAndScroll((error, values) => {
             if (!error) {
                 // submit the values
                 dispatch({
                     type: 'user/edit',
-                    payload: values,
+                    payload: {
+                        ...values,
+                        roles: roles.map(p => p.code)
+                    },
                     callback: res => {
                         if (res.err) message.error(res.code);
                         else
@@ -192,10 +207,38 @@ class UserDetailForm extends PureComponent {
             },
         });
     };
+    roleADD = (code) => {
+        const {
+            dispatch,
+        } = this.props;
+        const { roles } = this.state;
+        dispatch({
+            type: 'user/addRole',
+            payload: code
+        });
+        if (roles.includes(code))
+            roles.splice(roles.findIndex(r => r == code), 1);
 
+    }
 
+    roleDel = (code) => {
+        const {
+            dispatch,
+        } = this.props;
+        const { roles } = this.state;
+        dispatch({
+            type: 'user/removeRole',
+            payload: code
+        })
+        if (!roles.includes(code))
+            roles.push(code);
+
+            
+    }
+   
 
     render() {
+
         const {
             form: { getFieldDecorator },
             loading,
@@ -204,26 +247,21 @@ class UserDetailForm extends PureComponent {
             user: { detail },
             role: { list }
         } = this.props;
-        const { width } = this.state;
-        const userRoles = [
-
-        ];
+        const { width, roles } = this.state;
         const roleMenu = (
-            <Menu>
-                {list.map(r => (
-                    <Menu.Item key={r.code}>
-                        <a rel="noopener noreferrer">{r.name}</a>
+            <Menu >
+                {roles.map(r => (
+                    <Menu.Item key={r.code} onClick={() => this.roleADD(r)}>
+                        <a rel="noopener noreferrer" >{r.name}</a>
                     </Menu.Item>
                 ))}
             </Menu>
         );
-
-
         return (
             <PageHeaderWrapper
                 loading={loading}
                 title={`编辑用户 "${detail.account}"`}
-                content={`备注: ${detail.description || '无'}`}
+                content={`备注: ${detail.desc || '无'}`}
                 wrapperClassName={styles.advancedForm}
             >
                 <Card title="基本信息" className={styles.card} bordered={false} loading={loading}>
@@ -239,7 +277,7 @@ class UserDetailForm extends PureComponent {
                             <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
                                 <Form.Item label="手机号码">
                                     {getFieldDecorator('mobile', {
-                                        initialValue: detail.mobile,
+                                        initialValue: detail.phone,
                                     })(
                                         <Input
                                             type="mobile"
@@ -296,7 +334,7 @@ class UserDetailForm extends PureComponent {
                             <Col lg={6} md={12} sm={24}>
                                 <Form.Item label="性别">
                                     {getFieldDecorator('gender', {
-                                        initialValue: detail.gender,
+                                        initialValue: detail.sex,
                                     })(
                                         <Select placeholder="请选择性别">
                                             <Option value={0}>男</Option>
@@ -307,7 +345,9 @@ class UserDetailForm extends PureComponent {
                             </Col>
                             <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
                                 <Form.Item label="座机号">
-                                    {getFieldDecorator('telephone', {})(
+                                    {getFieldDecorator('telephone', {
+                                        initialValue: detail.telephone
+                                    })(
                                         <Input maxLength="50" style={{ width: '100%' }} placeholder="请输入座机号" />
                                     )}
                                 </Form.Item>
@@ -322,8 +362,8 @@ class UserDetailForm extends PureComponent {
                                 <Form.Item label="允许登录时间范围">
                                     {getFieldDecorator('allow', {
                                         initialValue: [
-                                            detail.AllowStartTime ? moment(detail.AllowStartTime) : null,
-                                            detail.AllowEndTime ? moment(detail.AllowEndTime) : null,
+                                            detail.allowStartTime? moment(detail.allowStartTime) : null,
+                                            detail.allowEndTime? moment(detail.allowEndTime) : null,
                                         ],
                                     })(<RangePicker style={{ width: '100%' }} />)}
                                 </Form.Item>
@@ -332,8 +372,8 @@ class UserDetailForm extends PureComponent {
                                 <Form.Item label="账号锁定时间范围">
                                     {getFieldDecorator('lock', {
                                         initialValue: [
-                                            detail.LockStartDate ? moment(detail.LockStartDate) : null,
-                                            detail.LockEndDate ? moment(detail.LockEndDate) : null,
+                                            detail.lockStartTime ? moment(detail.lockStartTime) : null,
+                                            detail.lockEndTime ? moment(detail.lockEndTime) : null,
                                         ],
                                     })(<RangePicker style={{ width: '100%' }} />)}
                                 </Form.Item>
@@ -343,14 +383,14 @@ class UserDetailForm extends PureComponent {
                             <Col lg={12} md={24} sm={24}>
                                 <Form.Item label="安全问题">
                                     {getFieldDecorator('question', {
-                                        initialValue: detail.Question,
+                                        initialValue: detail.question,
                                     })(<Input placeholder="请输入安全问题" />)}
                                 </Form.Item>
                             </Col>
                             <Col lg={12} md={24} sm={24}>
                                 <Form.Item label="安全问题答案">
                                     {getFieldDecorator('answer', {
-                                        initialValue: detail.AnswerQuestion,
+                                        initialValue: detail.answer,
                                     })(<Input placeholder="请输入安全问题答案" />)}
                                 </Form.Item>
                             </Col>
@@ -360,7 +400,7 @@ class UserDetailForm extends PureComponent {
                                 <Form.Item label="是否启用">
                                     {getFieldDecorator('enabled', {
                                         valuePropName: 'checked',
-                                        initialValue: detail.EnableMark,
+                                        initialValue: Boolean(detail.active),
                                     })(
                                         <Switch
                                             checkedChildren={<Icon type="check" />}
@@ -374,18 +414,19 @@ class UserDetailForm extends PureComponent {
                 </Card>
                 <Card title="角色分配" className={styles.card} bordered={false} loading={loading} >
                     {/* <Card title="角色分配" extra={<a onClick={this.showRoleModel}>管理角色</a>} className={styles.card} bordered={false} loading={loading} > */}
-                    {userRoles.map(r => (
+                    {detail.roles ? detail.roles.map(r => (
                         <Card.Grid key={r.code} style={{ width: '25%', textAlign: 'center' }}>
                             {r.name}
-                            <Icon type="close-circle" theme="filled" style={{ cursor: 'pointer', color: '#f5222d', marginLeft: '6px' }} /></Card.Grid>
-                    ))}
-                    <Dropdown overlay={roleMenu} trigger={['click']} placement="topLeft">
+                            <Icon type="close-circle" theme="filled" style={{ cursor: 'pointer', color: '#f5222d', marginLeft: '6px' }}  onClick={() => this.roleDel(r)}/></Card.Grid>
+                    )) : ''}
+                    {roles && roles.length > 0 ? (<Dropdown overlay={roleMenu} trigger={['click']} placement="topLeft">
                         <Card.Grid style={{ width: '25%', textAlign: 'center' }}>
-                            <Fragment>
-                                <Icon type="plus" theme="outlined" style={{ fontSize: '20px' }} />
+                            <Fragment >
+                                <Icon type={'plus'} theme="outlined" style={{ fontSize: '20px' }} />
                             </Fragment>
                         </Card.Grid>
-                    </Dropdown>
+                    </Dropdown>) : ''}
+
                 </Card>
                 <FooterToolbar style={{ width }}>
                     {this.getErrorInfo()}
@@ -399,7 +440,7 @@ class UserDetailForm extends PureComponent {
                             删除账号
                         </Button>
                     </Popconfirm>
-
+                    {/* <button onClick={()=>this.handleClick()}>ok</button> */}
                     <Button type="primary" onClick={this.validate} loading={submitting}>
                         提交
                     </Button>

@@ -248,6 +248,7 @@ class UpdateForm extends PureComponent {
     };
 
     render() {
+        
         const { updateModalVisible, handleUpdateModalVisible } = this.props;
         const { currentStep, formVals } = this.state;
 
@@ -287,7 +288,6 @@ class SystemUserList extends PureComponent {
         formValues: {},
         stepFormValues: {},
     };
-
     columns = [
         {
             title: '',
@@ -326,6 +326,8 @@ class SystemUserList extends PureComponent {
             title: '状态',
             dataIndex: 'status',
             render: val => <Tag color={statusColor[val - 1]}>{status[val - 1]}</Tag>,
+            // const status = ['正常', '禁止登录', '锁定', '禁用'];
+            // const statusColor = ['green', 'orange', 'orange', 'red'];
         },
         {
             title: '操作',
@@ -354,7 +356,7 @@ class SystemUserList extends PureComponent {
             const newObj = { ...obj };
             newObj[key] = getValue(filtersArg[key]);
             return newObj;
-        }, {});
+        }, {}); 
 
         if (sorter.field) {
             if (sorter.field == 'createDate')
@@ -629,10 +631,12 @@ class SystemUserList extends PureComponent {
     }
 
     render() {
+        console.log('a',this.props);
         const {
             user: { sysList },
             loading,
         } = this.props;
+        // const userId=sysList.map(p=>p.id)
         const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
         const menu = (
             <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
@@ -673,7 +677,7 @@ class SystemUserList extends PureComponent {
                             selectedRows={selectedRows}
                             loading={loading}
                             data={sysList}
-                            rowKey={'userid'}
+                            rowKey={''}
                             columns={this.columns}
                             onSelectRow={this.handleSelectRows}
                             onChange={this.handleStandardTableChange}
