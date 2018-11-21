@@ -631,7 +631,6 @@ class SystemUserList extends PureComponent {
     }
 
     render() {
-        console.log('a',this.props);
         const {
             user: { sysList },
             loading,

@@ -14,8 +14,6 @@ export default {
         currentUser: {},
         detail: {
             roles: [],
-            allow:[],
-            lock:[]
         },
         sysList: {
             list: [],
@@ -26,7 +24,6 @@ export default {
     effects: {
         *fetch({ payload }, { call, put }) {
             const response = yield call(queryUsers, payload);
-            console.log('pay',payload);
             yield put({
                 type: 'save',
                 payload: response,
@@ -45,6 +42,7 @@ export default {
 
         *edit({ payload, callback }, { call, put }) {
             const response = yield call(editUser, payload);
+            
             if (callback) yield call(callback, response);
         },
         *remove({ payload, callback }, { call, put }) {

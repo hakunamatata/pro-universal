@@ -273,6 +273,22 @@ export default [
         ],
       },
       {
+        name: 'cms',
+        icon: 'table',
+        path: '/cms',
+        routes: [
+          {
+            path: '/cms/search',
+            name: 'search',
+            component: './Cms/SearchCms',
+          },
+          {
+            path: '/cms/search/detail',
+            component: './Cms/DetailCms',
+          },
+        ],
+      },
+      {
         component: '404',
       },
     ],

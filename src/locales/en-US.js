@@ -302,5 +302,7 @@ export default {
    'validation.account.required':'请输入账号',
    'validation.account.placeholder':'账号',
    'menu.system':'System',
-   'menu.system.user':'Users'
+   'menu.system.user':'Users',
+   'menu.cms':'CMS',
+   'menu.cms.search':'SearchCmS'
 };

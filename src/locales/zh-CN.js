@@ -295,7 +295,8 @@ export default {
    'validation.account.placeholder':'账号',
    'menu.system':'系统管理',
    'menu.system.user':'用户管理',
-   
+   'menu.cms':'文章管理',
+   'menu.cms.search':'文章搜索',
    
    /*
         系统错误信息
