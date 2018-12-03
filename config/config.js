@@ -66,6 +66,16 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/': '' },
     },
+    '/content/': {
+      target: 'http://localhost:64739/',
+      changeOrigin: true,
+      pathRewrite: { '^/': '' },
+    },
+    '/resource/': {
+      target: 'http://localhost:64739/',
+      changeOrigin: true,
+      pathRewrite: { '^/': '' },
+    },
   },
   ignoreMomentLocale: true,
   lessLoaderOptions: {

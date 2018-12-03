@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-
+import cookie from 'react-cookies';
 export async function query(params) {
   return request('/api/user/list', {
     method: 'POST',
@@ -11,7 +11,14 @@ export async function query(params) {
 }
 
 export async function queryCurrent() {
-  return request('/api/currentUser');
+  const token = cookie.load('token');
+  return request('/api/user/currentUser', {
+    method: 'POST',
+    body: {
+      token: cookie.load('token'),
+      method: 'post',
+    },
+  });
 }
 
 export async function createUser(params) {

@@ -286,23 +286,23 @@ export default {
   'app.setting.production.hint':
     '配置栏只在开发环境用于预览，生产环境不会展现，请拷贝后手动修改配置文件',
 
-
-    /*
+  /*
         Universal Add    
     */
-   'validation.account.wrong-format':'请输入4-16位以字母,数字,下划线,减号组成的账号',
-   'validation.account.required':'请输入账号',
-   'validation.account.placeholder':'账号',
-   'menu.system':'系统管理',
-   'menu.system.user':'用户管理',
-   'menu.cms':'文章管理',
-   'menu.cms.search':'文章搜索',
-   
-   /*
+  'validation.account.wrong-format': '请输入4-16位以字母,数字,下划线,减号组成的账号',
+  'validation.account.required': '请输入账号',
+  'validation.account.placeholder': '账号',
+  'menu.system': '系统管理',
+  'menu.system.user': '用户管理',
+  'menu.system.dictionary': '字典目录',
+  'menu.cms': '文章管理',
+  'menu.cms.search': '文章搜索',
+
+  /*
         系统错误信息
    */
-   'error.ERR_ARGUMENT_FORMAT':'用户账号格式不正确',
-   'error.ERR_INTERNAL':'内部未知错误',
-   'error.ERR_USER_EXIST':'该用户已存在',
-   'error.ERR_UNKNOW':'未知错误'
+  'error.ERR_ARGUMENT_FORMAT': '用户账号格式不正确',
+  'error.ERR_INTERNAL': '内部未知错误',
+  'error.ERR_USER_EXIST': '该用户已存在',
+  'error.ERR_UNKNOW': '未知错误',
 };

@@ -270,6 +270,11 @@ export default [
             path: '/system/user/detail',
             component: './System/UserDetail',
           },
+          {
+            path: '/system/dictionary',
+            name: 'dictionary',
+            component: './System/Dictioanry',
+          },
         ],
       },
       {
